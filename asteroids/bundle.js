@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -118,6 +118,85 @@ module.exports = Util;
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const MovingObject = __webpack_require__(0);
+const Util = __webpack_require__(1);
+const Asteroid = __webpack_require__(3);
+
+
+
+function Game() {
+  this.DIM_X = 500;
+  this.DIM_Y = 700;
+  this.NUM_ASTEROIDS = 17;
+  this.asteroids = [];
+  this.addAsteroids();
+}
+
+Game.prototype.addAsteroids = function() {
+  for (let i = 0; i < this.NUM_ASTEROIDS; i++) {
+    console.log(this.randomPosition());
+    this.asteroids.push(new Asteroid({pos: this.randomPosition()}));
+  }
+};
+
+Game.prototype.randomPosition = function() {
+  return [(this.DIM_X * Math.random()), (this.DIM_Y * Math.random())];
+};
+
+Game.prototype.draw = function(ctx) {
+  ctx.clearRect(0, 0, this.DIM_X, this.DIM_Y);
+  for (let i = 0; i < this.asteroids.length; i++) {
+    this.asteroids[i].draw();
+  }
+};
+
+Game.prototype.moveObjects = function() {
+  for (let i = 0; i < this.asteroids.length; i++) {
+    this.asteroids[i].move();
+  }
+};
+
+//
+// setInterval(() => {
+//   window.astertwo = new Asteroid({
+//     pos: [200,200]
+//   });
+//   window.astertwo.draw(ctx);
+//   window.astertwo.move();
+//   location.reload(true);
+//   window.astertwo.draw(ctx);
+//   window.astertwo.move();
+//   location.reload(true);
+//   window.astertwo.draw(ctx);
+//   window.astertwo.move();
+//   location.reload(true);
+//   window.astertwo.draw(ctx);
+//
+//
+//   window.aster = new Asteroid({
+//     pos: [500,500]
+//   });
+//   window.aster.draw(ctx);
+//   window.aster.move();
+//   location.reload(true);
+//   window.aster.draw(ctx);
+//   window.aster.move();
+//   location.reload(true);
+//   window.aster.draw(ctx);
+//   window.aster.move();
+//   location.reload(true);
+//   window.aster.draw(ctx);
+// }, 100);
+
+// window.asteroid = new Asteroid();
+
+module.exports = Game;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
 const Util = __webpack_require__(1);
 const MovingObject = __webpack_require__(0);
 
@@ -145,74 +224,30 @@ function scale (vec, m) {
 
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const MovingObject = __webpack_require__(0);
-const Util = __webpack_require__(1);
-const Asteroid = __webpack_require__(2);
+const Game = __webpack_require__(2);
 
-
-
-function Game() {
-  this.DIM_X = 500;
-  this.DIM_Y = 700;
-  this.NUM_ASTEROIDS = 17;
-  this.asteroids = [];
-  this.addAsteroids();
+function GameView(ctx) {
+  this.ctx = ctx;
+  this.game = new Game();
 }
 
-Game.prototype.addAsteroids = function() {
-  for (let i = 0; i < this.NUM_ASTEROIDS; i++) {
-    this.asteroids.push(new Asteroid(this.randomPosition()));
-  }
+GameView.prototype.start = function(ctx) {
+  setInterval(() => {
+    this.game.moveObjects();
+    this.game.draw(ctx);
+  }, 20);
 };
-
-Game.prototype.randomPosition = function() {
-  return [(this.DIM_X * Math.random()), (this.DIM_Y * Math.random())];
-};
-
-
 
 const canvasEl = document.getElementsByTagName("canvas")[0];
 canvasEl.height = window.innerHeight;
 canvasEl.width = window.innerWidth;
 const ctx = canvasEl.getContext("2d");
 
-
-
-setInterval(() => {
-  window.astertwo = new Asteroid({
-    pos: [200,200]
-  });
-  window.astertwo.draw(ctx);
-  window.astertwo.move();
-  location.reload(true);
-  window.astertwo.draw(ctx);
-  window.astertwo.move();
-  location.reload(true);
-  window.astertwo.draw(ctx);
-  window.astertwo.move();
-  location.reload(true);
-  window.astertwo.draw(ctx);
-
-
-  window.aster = new Asteroid({
-    pos: [500,500]
-  });
-  window.aster.draw(ctx);
-  window.aster.move();
-  location.reload(true);
-  window.aster.draw(ctx);
-  window.aster.move();
-  location.reload(true);
-  window.aster.draw(ctx);
-  window.aster.move();
-  location.reload(true);
-  window.aster.draw(ctx);
-}, 100);
-
-// window.asteroid = new Asteroid();
+let game = new GameView(ctx);
+game.start(ctx);
 
 
 /***/ })
